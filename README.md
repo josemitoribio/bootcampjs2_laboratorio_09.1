@@ -1,11 +1,9 @@
-# typescript-sandbox
+# Laboratorio 09.1
 
-Para la parte de cada módulo en la que te planteamos ejercicios con JavaScript puedes usar este sandbox.
+## **Ticket de Compra - Algoritmos**
 
-Pasos:
+En este laboratorio vamos a hacer un programa que nos calcule el precio de un ticket de compra.
 
-- Clonate el proyecto.
-- Instala las dependencias con `npm install`.
-- Ejecuta el sandbox con `npm run dev`.
-- Abre el navegador en `http://localhost:5173/` (si ese puerto no te funciona, mira en la consola donde has hecho el build, puede que este ocupado y se haya abierto en otro puerto).
-- Puedes empezar a meter tu código en el fichero:
+El ticket de compra tendrá una serie de líneas de ticket, cada una de ellas con un producto y una cantidad.
+
+Cada producto tendrá un nombre, un precio y un tipo de IVA.

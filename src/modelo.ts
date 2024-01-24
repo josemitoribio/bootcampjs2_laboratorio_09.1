@@ -35,24 +35,24 @@ export interface ResultadoLineaTicket {
 
   //En cuanto a los totales:
 
-  export interface ResultadoTotalTicket {
+export interface ResultadoTotalTicket {
     totalSinIva: number;
     totalConIva: number;
     totalIva: number;
   }
   
-  export interface TotalPorTipoIva {
+export interface TotalPorTipoIva {
     tipoIva: TipoIva;
     cuantia : number;
   }
   
-  export interface TicketFinal {
+export interface TicketFinal {
     lineas: ResultadoLineaTicket[];
     total: ResultadoTotalTicket;
     desgloseIva: TotalPorTipoIva[];
   }
 
-  export const productos: LineaTicket[] = [
+export const productos: LineaTicket[] = [
     {
       producto: {
         nombre: "Legumbres",

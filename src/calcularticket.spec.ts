@@ -2,7 +2,10 @@ import {
     calcularPrecioSinIva,
     calcularPrecioConIva,
     calcularDesgloseIva,
-    calculaTicket,
+    calculaLineasTicket
+} from "./calcularticket.helpers";
+
+import {
     calcularTotalTicket
 } from "./calcularticket";
 
@@ -96,13 +99,13 @@ describe("calcularPrecioConIva", () => {
   
 });
 
-describe("calculaTicket", () => {
+describe("calculaLinesaTicket", () => {
     it("debería devolver un throw si los parámetros de entrada son undefined", () => {
         // Arrange
         const lineasTicket: any = undefined;
     
         // Act
-        const lineasCalculadas = () => calculaTicket(lineasTicket);
+        const lineasCalculadas = () => calculaLineasTicket(lineasTicket);
     
         // Assert
         expect(lineasCalculadas).toThrowError("Los parámetros introducidos no son correctos");
@@ -113,7 +116,7 @@ describe("calculaTicket", () => {
         const lineasTicket: any = null;
     
         // Act
-        const lineasCalculadas = () => calculaTicket(lineasTicket);
+        const lineasCalculadas = () => calculaLineasTicket(lineasTicket);
     
         // Assert
         expect(lineasCalculadas).toThrowError("Los parámetros introducidos no son correctos");
@@ -127,7 +130,7 @@ describe("calculaTicket", () => {
       ];
   
       // Act
-      const lineasCalculadas = calculaTicket(lineasTicket);
+      const lineasCalculadas = calculaLineasTicket(lineasTicket);
   
       // Assert
       expect(lineasCalculadas).toEqual([
