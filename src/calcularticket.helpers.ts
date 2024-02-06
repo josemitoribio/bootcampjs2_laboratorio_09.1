@@ -12,81 +12,80 @@ export const calcularPrecioSinIva = (precio: number, cantidad: number): number =
       return Number((precio * cantidad).toFixed(2));
    };
   
+const calcularIva = (precio: number, cantidad: number, tipoIva: TipoIva) => {
+    switch (tipoIva) {
+      case "general":
+        return precio * cantidad * 1.21;
+      case "reducido":
+        return precio * cantidad * 1.1;
+      case "superreducidoA":
+        return precio * cantidad * 1.05;
+      case "superreducidoB":
+        return precio * cantidad * 1.04;
+      case "superreducidoC":
+      case "sinIva":
+        return precio * cantidad;
+      default:
+        throw new Error("Tipo de IVA no válido");
+    }
+  };
+
 export const calcularPrecioConIva = (precio: number, cantidad: number, tipoIva: TipoIva): number => {
     if (!precio || !cantidad || !tipoIva) {
       throw new Error("Los parámetros introducidos no son correctos");
     }
   
-    let resultado: number;
-  
-    switch (tipoIva) {
-      case "general":
-        resultado = precio * cantidad * 1.21;
-        break;
-      case "reducido":
-        resultado = precio * cantidad * 1.1;
-        break;
-      case "superreducidoA":
-        resultado = precio * cantidad * 1.05;
-        break;
-      case "superreducidoB":
-        resultado = precio * cantidad * 1.04;
-        break;
-      case "superreducidoC":
-      case "sinIva":
-        resultado = precio * cantidad;
-        break;
-      default:
-        throw new Error("Tipo de IVA no válido");
-    }
+    let resultado: number = calcularIva(precio, cantidad, tipoIva)
   
     return Number(resultado.toFixed(2));
   };
   
+const calcularPrecioLinea = (linea: LineaTicket): ResultadoLineaTicket => {
+    return {
+      nombre: linea.producto.nombre,
+      cantidad: linea.cantidad,
+      tipoIva: linea.producto.tipoIva,
+      precioSinIva: calcularPrecioSinIva(linea.producto.precio, linea.cantidad),
+      precioConIva: calcularPrecioConIva(linea.producto.precio, linea.cantidad, linea.producto.tipoIva),
+    };
+  };
+  
 export const calculaLineasTicket = (lineasTicket: LineaTicket[]): ResultadoLineaTicket[] => {
-    if(!lineasTicket) {
+    if (!lineasTicket) {
       throw new Error("Los parámetros introducidos no son correctos");
     }
-  
-    const lineasCalculadas: ResultadoLineaTicket[] = [];
-  
-    for (let i = 0; i < lineasTicket.length; i++) {
-      const linea = lineasTicket[i];
-  
-      const precioSinIva = calcularPrecioSinIva(linea.producto.precio, linea.cantidad);
-      const precioConIva = calcularPrecioConIva(linea.producto.precio, linea.cantidad, linea.producto.tipoIva);
-  
-      const resultadoLinea: ResultadoLineaTicket = {
-        nombre: linea.producto.nombre,
-        cantidad: linea.cantidad,
-        precioSinIva,
-        tipoIva: linea.producto.tipoIva,
-        precioConIva,
-      };
-  
-      lineasCalculadas.push(resultadoLinea);
-    }
-  
-    return lineasCalculadas;
+    return lineasTicket.map(calcularPrecioLinea);
   };
-  
+
+const calcularDesgloseParaLinea = (linea: ResultadoLineaTicket, desglose: TotalPorTipoIva[]): void => {
+  const { tipoIva, precioConIva } = linea;
+  const tipoIvaExistente = desglose.find((item) => item.tipoIva === tipoIva);
+
+  if (tipoIvaExistente) {
+      tipoIvaExistente.cuantia += precioConIva;
+  } else {
+      desglose.push({ tipoIva, cuantia: precioConIva });
+  }
+};
+
 export const calcularDesgloseIva = (lineasCalculadas: ResultadoLineaTicket[]): TotalPorTipoIva[] => {
-    if (!lineasCalculadas) {
+  if (!lineasCalculadas) {
       throw new Error("Los parámetros introducidos no son correctos");
-    }
-  
-    const desglose: TotalPorTipoIva[] = [];
-  
-    lineasCalculadas.forEach((linea) => {
-      const { tipoIva, precioConIva } = linea;
-      const tipoIvaExistente = desglose.find((item) => item.tipoIva === tipoIva);
-  
-      if (tipoIvaExistente) {
-        tipoIvaExistente.cuantia += precioConIva;
-      } else {
-        desglose.push({ tipoIva, cuantia: precioConIva });
-      }
-    });
-  
-    return desglose;
-  };
+  }
+
+  const desglose: TotalPorTipoIva[] = [];
+
+  lineasCalculadas.forEach((linea) => {
+      calcularDesgloseParaLinea(linea, desglose);
+  });
+
+  return desglose;
+};
+
+export const calcularTotalSinIva = (lineasCalculadas: ResultadoLineaTicket[]): number => {
+  return lineasCalculadas.reduce((total, linea) => total + linea.precioSinIva, 0);
+};
+
+export const calcularTotalConIva = (lineasCalculadas: ResultadoLineaTicket[]): number => {
+  return lineasCalculadas.reduce((total, linea) => total + linea.precioConIva, 0);
+};

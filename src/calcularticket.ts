@@ -5,30 +5,38 @@ import {
 } from "./modelo";
 
 import {
-  calcularDesgloseIva
+  calcularDesgloseIva,
+  calcularTotalSinIva,
+  calcularTotalConIva
 } from "./calcularticket.helpers"
 
 export const calcularTotalTicket = (lineasCalculadas: ResultadoLineaTicket[]): TicketFinal => {
-  if(!lineasCalculadas) {
+  if (!lineasCalculadas) {
     throw new Error("Los parámetros introducidos no son correctos");
   }
 
-  const totalSinIva = lineasCalculadas.reduce((total, linea) => total + linea.precioSinIva, 0);
-  const totalConIva = lineasCalculadas.reduce((total, linea) => total + linea.precioConIva, 0);
+  // Calcular total sin IVA
+  const totalSinIva = calcularTotalSinIva(lineasCalculadas);
 
+  // Calcular total con IVA
+  const totalConIva = calcularTotalConIva(lineasCalculadas);
+
+  // Calcular desglose del IVA
   const desgloseIva = calcularDesgloseIva(lineasCalculadas);
 
+  // Resultado total del ticket
   const resultadoTotal: ResultadoTotalTicket = {
     totalSinIva: Number(totalSinIva.toFixed(2)),
     totalConIva: Number(totalConIva.toFixed(2)),
     totalIva: Number((totalConIva - totalSinIva).toFixed(2)),
   };
 
+  // Construir resultado final
   const resultadoFinal: TicketFinal = {
     lineas: lineasCalculadas,
     total: resultadoTotal,
     desgloseIva,
   };
 
-  return resultadoFinal
+  return resultadoFinal;
 };
